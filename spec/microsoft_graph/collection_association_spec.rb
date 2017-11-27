@@ -158,40 +158,78 @@ describe MicrosoftGraph::CollectionAssociation do
   end
 
   context "pagination" do
-    Given do
-      stub_request(:get, "https://graph.microsoft.com/v1.0/me")
-        .to_return({body: {id: "USER123"}.to_json})
-      first_page_body = {
-        "@odata.context"=>"https://graph.microsoft.com/v1.0/$metadata#users('admin%40testdouble.onmicrosoft.com')/calendars",
-        "@odata.nextLink" => "https://graph.microsoft.com/v1.0/users/USER123/calendars?$skip=1",
-        "value"=>[
-          {
-            "id"=>"ABC123",
-            "name"=>"Calendar",
-            "color"=>"lightBlue",
-          }
-        ]
-      }
-      second_page_body = {
-        "@odata.context"=>"https://graph.microsoft.com/v1.0/$metadata#users('admin%40testdouble.onmicrosoft.com')/calendars",
-        "value"=>[
-          {
-            "id"=>"DEF456",
-            "name"=>"Calendar 2",
-            "color"=>"lightGreen",
-          }
-        ]
-      }
-      stub_request(:get, "https://graph.microsoft.com/v1.0/users/USER123/calendars")
-        .to_return({ body: first_page_body.to_json }).times(1)
-      stub_request(:get, "https://graph.microsoft.com/v1.0/users/USER123/calendars?$skip=1")
-        .to_return({ body: second_page_body.to_json }).times(1)
+
+    context 'annotated key' do
+      Given do
+        stub_request(:get, "https://graph.microsoft.com/v1.0/me")
+          .to_return({body: {id: "USER123"}.to_json})
+        first_page_body = {
+          "@odata.context"=>"https://graph.microsoft.com/v1.0/$metadata#users('admin%40testdouble.onmicrosoft.com')/calendars",
+          "@odata.nextLink" => "https://graph.microsoft.com/v1.0/users/USER123/calendars?$skip=1",
+          "value"=>[
+            {
+              "id"=>"ABC123",
+              "name"=>"Calendar",
+              "color"=>"lightBlue",
+            }
+          ]
+        }
+        second_page_body = {
+          "@odata.context"=>"https://graph.microsoft.com/v1.0/$metadata#users('admin%40testdouble.onmicrosoft.com')/calendars",
+          "value"=>[
+            {
+              "id"=>"DEF456",
+              "name"=>"Calendar 2",
+              "color"=>"lightGreen",
+            }
+          ]
+        }
+        stub_request(:get, "https://graph.microsoft.com/v1.0/users/USER123/calendars")
+          .to_return({ body: first_page_body.to_json }).times(1)
+        stub_request(:get, "https://graph.microsoft.com/v1.0/users/USER123/calendars?$skip=1")
+          .to_return({ body: second_page_body.to_json }).times(1)
+      end
+      Given(:me) { graph.me }
+      Given(:subject) { me.calendars }
+      When(:result) { subject.each.map { |c| c.id  } }
+      Then { result.length == 2 }
     end
 
-    Given(:me) { graph.me }
-    Given(:subject) { me.calendars }
-    When(:result) { subject.each.map { |c| c.id  } }
-    Then { result.length == 2 }
+    context 'non-annotated key' do
+      Given do
+        stub_request(:get, "https://graph.microsoft.com/v1.0/me")
+          .to_return({body: {id: "USER123"}.to_json})
+        first_page_body = {
+          "odata.context"=>"https://graph.microsoft.com/v1.0/$metadata#users('admin%40testdouble.onmicrosoft.com')/calendars",
+          "odata.nextLink" => "https://graph.microsoft.com/v1.0/users/USER123/calendars?$skip=1",
+          "value"=>[
+            {
+              "id"=>"ABC123",
+              "name"=>"Calendar",
+              "color"=>"lightBlue",
+            }
+          ]
+        }
+        second_page_body = {
+          "odata.context"=>"https://graph.microsoft.com/v1.0/$metadata#users('admin%40testdouble.onmicrosoft.com')/calendars",
+          "value"=>[
+            {
+              "id"=>"DEF456",
+              "name"=>"Calendar 2",
+              "color"=>"lightGreen",
+            }
+          ]
+        }
+        stub_request(:get, "https://graph.microsoft.com/v1.0/users/USER123/calendars")
+          .to_return({ body: first_page_body.to_json }).times(1)
+        stub_request(:get, "https://graph.microsoft.com/v1.0/users/USER123/calendars?$skip=1")
+          .to_return({ body: second_page_body.to_json }).times(1)
+      end
+      Given(:me) { graph.me }
+      Given(:subject) { me.calendars }
+      When(:result) { subject.each.map { |c| c.id  } }
+      Then { result.length == 2 }
+    end
 
     context "that is" do
       Given do
@@ -258,7 +296,6 @@ describe MicrosoftGraph::CollectionAssociation do
         When(:result) { subject.each.map { |c| c.id  } }
         Then { result.length == 3 }
       end
-
     end
 
   end
