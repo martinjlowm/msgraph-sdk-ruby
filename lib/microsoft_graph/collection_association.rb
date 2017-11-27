@@ -206,7 +206,9 @@ class MicrosoftGraph
           raise e
         end
       end
-      @next_link = result[:attributes]['@odata.next_link']
+      @next_link = result[:attributes]['@odata.next_link'] ||
+                   result[:attributes]['odata.next_link']
+
       @next_link.sub!(MicrosoftGraph::BASE_URL, "") if @next_link
 
       result[:attributes]['value'].each do |entity_hash|
