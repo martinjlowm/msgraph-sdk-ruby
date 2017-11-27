@@ -1,6 +1,7 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+$:.push File.expand_path('../vendor/adal/lib', __FILE__)
 require 'microsoft_graph/version'
 
 Gem::Specification.new do |spec|
@@ -21,7 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec-given", "~> 3.5.0"
-  spec.add_development_dependency "adal", "~> 1.0"
   spec.add_development_dependency "dotenv", "~> 2.0.2"
   spec.add_development_dependency "pry", "~> 0.10.3"
   spec.add_development_dependency "simplecov", "~> 0.11.1"

@@ -1,0 +1,3 @@
+[submodule "vendor/adal"]
+	path = vendor/adal
+	url = https://github.com/AzureAD/azure-activedirectory-library-for-ruby.git
