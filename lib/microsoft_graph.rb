@@ -10,7 +10,10 @@ Dir[
 
 class MicrosoftGraph
   attr_reader :service
-  BASE_URL = "https://graph.microsoft.com/v1.0/"
+  attr_reader :storage_size_limit
+
+  BASE_URL = 'https://graph.microsoft.com/v1.0/'
+  STORAGE_SIZE_LIMIT = 1000
 
   def initialize(options = {}, &auth_callback)
     @service = OData::Service.new(
@@ -18,6 +21,10 @@ class MicrosoftGraph
       metadata_file: options[:cached_metadata_file],
       auth_callback: auth_callback
     )
+
+    @storage_size_limit = options[:storage_size_limit]
+    @storage_size_limit = STORAGE_SIZE_LIMIT if @storage_size_limit.nil?
+
     @association_collections = {}
     unless MicrosoftGraph::ClassBuilder.loaded?
       MicrosoftGraph::ClassBuilder.load!(service)
