@@ -186,7 +186,8 @@ class MicrosoftGraph
     private
 
     def last?
-      @loaded || @internal_values.size >= 1000
+      @loaded || (@graph.storage_size_limit &&
+                  @internal_values.size >= @graph.storage_size_limit)
     end
 
     def fetch_next_page
