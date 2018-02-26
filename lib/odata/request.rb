@@ -20,10 +20,12 @@ module OData
         .new(uri.hostname, uri.port)
         .tap { |h| h.use_ssl = true }
         .send(*send_params)
+
       raise ServerError.new(response) unless response.code.to_i < 500
       raise AuthenticationError.new(response) if response.code.to_i == 401
       raise AuthorizationError.new(response) if response.code.to_i == 403
       raise ClientError.new(response) unless response.code.to_i < 400
+
       if response.body
         begin
           OData.convert_keys_to_snake_case(JSON.parse(response.body))
